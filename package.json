@@ -1,0 +1,24 @@
+{
+  "name": "b-and-b",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@parcel/transformer-vue": "^2.12.0",
+    "@types/jest": "^29.5.12",
+    "ejs": "^3.1.10",
+    "jest": "^29.7.0",
+    "parcel": "^2.12.0",
+    "prettier": "^3.3.2",
+    "ts-jest": "^29.2.0",
+    "typescript": "^5.5.3"
+  },
+  "dependencies": {
+    "vue": "^3.4.31"
+  }
+}

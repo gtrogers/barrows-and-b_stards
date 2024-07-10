@@ -1,0 +1,24 @@
+:: Walking Skeleton
+. Display scene and options via vue js
+x Render AST to scene
+. Parse scene file to AST
+> Simple expression parser / runner
+. Engine to hang eveything off of
+
+:: Code hygiene / QoL
+. Value based error handling
+. Negative / unhappy path testing
+
+:: More features
+. 'Directive' node to run expressions
+. Dice roller
+. Map
+
+:: Game content
+. Party creation
+. Dungeons to explore
+
+:: UI
+. Side bar
+. Inventory / party screen
+. Make it look nice
