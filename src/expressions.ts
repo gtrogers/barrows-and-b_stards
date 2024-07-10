@@ -2,7 +2,7 @@ import type { Engine } from "./engine";
 
 type ExpressionError = { error: string };
 type ExpressionFunc = (args: string[], eng: Engine) => void | ExpressionError;
-type FuncName = "Go" | "Set";
+type FuncName = "Go" | "Set" | "Roll";
 export type TokenisedExpr = [FuncName, ...string[]];
 
 const KEYWORDS_TO_FUNCS: Record<FuncName, ExpressionFunc> = {
@@ -15,7 +15,12 @@ const KEYWORDS_TO_FUNCS: Record<FuncName, ExpressionFunc> = {
     }
   },
   Set: (args: string[], eng: Engine) => {
-    throw new Error("not yet implemented");
+    const [k, _, v] = args;
+    if (!k || !v) return { error: "A key and value are required for Set" };
+    eng.set(k, v);
+  },
+  Roll: (args: string[], eng: Engine) => {
+    const [stat, _] = args;
   },
 };
 

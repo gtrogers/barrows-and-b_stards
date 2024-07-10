@@ -2,7 +2,8 @@
 . Display scene and options via vue js
 x Render AST to scene
 . Parse scene file to AST
-> Simple expression parser / runner
+x Simple expression parser / runner
+. Add 'context' to expression running to allow chaing - e.g. Roll against stat. On success... . On failure...
 . Engine to hang eveything off of
 
 :: Code hygiene / QoL
