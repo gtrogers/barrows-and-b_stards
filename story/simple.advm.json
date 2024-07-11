@@ -1,0 +1,23 @@
+{
+  "scenes": {
+    "first": {
+      "description": [
+        [
+          ["text", "It was a dark and stormy night."],
+          ["action", "Go to second.", [["text", "Take a walk"]]]
+        ]
+      ],
+      "title": [["text", "first"]]
+    },
+    "second": {
+      "description": [
+        [
+          ["text", "You get wet and stub your toe in the dark."],
+          ["action", "Go to first.", [["text", "Go home"]]],
+          ["text", "."]
+        ]
+      ],
+      "title": [["text", "second"]]
+    }
+  }
+}

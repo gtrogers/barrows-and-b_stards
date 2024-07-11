@@ -5,6 +5,7 @@
     <button
       class="action-button"
       v-for="a in currentScene.actions"
+      :key="a[0] + currentScene.title"
       @click="engine.runExpr(a[0])"
     >
       {{ a[1] }}

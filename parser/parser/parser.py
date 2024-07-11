@@ -1,15 +1,5 @@
 import sys
-
-
-class World:
-    def __init__(self):
-        self.scenes = {}
-        self.current_scene = None
-
-    def add_scene_template(self, slug):
-        new_scene_template = Template(slug)
-        self.scenes[slug] = new_scene_template
-        self.current_scene = new_scene_template
+import json
 
 
 class Template:
@@ -37,6 +27,25 @@ class Template:
             self.add_node("text", text_content)
         else:
             self.nodes[-1][1] += text_content
+
+
+class World:
+    def __init__(self):
+        self.scenes = {}
+        self.current_scene: None | Template = None
+
+    def add_scene_template(self, slug):
+        new_scene_template = Template(slug)
+        self.scenes[slug] = new_scene_template
+        self.current_scene = new_scene_template
+
+    def output(self) -> str:
+        out = {}
+        for k, v in self.scenes.items():
+            # TODO: support multi paragraphs
+            out[k] = { 'description': [v.nodes], 'title': [["text", v.slug]] }
+
+        return json.dumps({ "scenes": out })
 
 
 class ReadableLine:
@@ -80,6 +89,13 @@ def process_tag(name: str, args: list[str], world: World):
     match (name):
         case "Scene":
             world.add_scene_template(args[0])
+        case "action":
+            current_scene = world.current_scene
+            if current_scene is None:
+                #TODO: refactor - example of tell over ask
+                raise ValueError("There is no current scene to add tags to.")
+            # TODO - support proper node nesting
+            current_scene.add_node(name, [args[1], [["text", args[0]]]])
         case _:
             if world.current_scene is None:
                 raise ValueError("There are no scene templates to add tags to.")
@@ -99,6 +115,8 @@ def process_line_to_template(line: ReadableLine, world: World):
                     raise ValueError("There are no scene templates to add text to.")
                 char = line.take()
                 # FIXME - this is a typing thing, we know char is never None here
+                # TODO - this is likely very slow and would benefit from a string builder
+                #        or similar pattern
                 world.current_scene.append_or_create_text(char or "")
 
 
@@ -110,9 +128,9 @@ def parse_file_to_template(file_path: str, world: World):
 
 
 def run(path):
-    with open(path) as f:
-        contents = f.read()
-        print(contents)
+    world = World()
+    parse_file_to_template(path, world)
+    print(world.output())
 
 
 if __name__ == "__main__":

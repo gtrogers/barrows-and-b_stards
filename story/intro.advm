@@ -1,0 +1,6 @@
+@Scene(slug-for-scene)
+
+Hello world @lookup(foo).
+
+@action()
+@action()
