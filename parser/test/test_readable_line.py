@@ -5,7 +5,7 @@ from parser.parser import ReadableLine
 
 class TestReadableLine(unittest.TestCase):
     def test_taking_chars(self):
-        line = ReadableLine("abcd");
+        line = ReadableLine("abcd")
         first = line.take()
         second = line.take()
         third = line.take()
@@ -25,7 +25,7 @@ class TestReadableLine(unittest.TestCase):
         self.assertEqual("hello wor4", result)
 
     def test_peeking(self):
-        line = ReadableLine("abcd");
+        line = ReadableLine("abcd")
         line.take()
         line.take()
         peaked = line.peek()
@@ -35,19 +35,18 @@ class TestReadableLine(unittest.TestCase):
         self.assertEqual("c", taken)
 
     def test_peeking_past_the_end_returns_none(self):
-        line = ReadableLine("abc");
+        line = ReadableLine("abc")
         [line.take() for _ in range(3)]
         peaked = line.peek()
 
         self.assertIsNone(peaked)
-
 
     def test_taking_a_tag(self):
         line = ReadableLine("Some words go here!@lookup(foo, bar)")
         # NB the '!' is just here for testing, normally we'd use
         #    peak to find the right spot
 
-        line.take_until('!')
+        line.take_until("!")
         tag_name, args = line.take_tag()
 
         self.assertEqual("lookup", tag_name)
@@ -56,4 +55,3 @@ class TestReadableLine(unittest.TestCase):
     def test_raises_error_when_not_at_tag(self):
         line = ReadableLine("no tags here")
         self.assertRaises(IndexError, lambda: line.take_tag())
-

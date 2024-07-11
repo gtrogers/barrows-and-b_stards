@@ -1,0 +1,9 @@
+@Scene(first)
+It was a dark and stormy night.
+
+@action(Take a walk, Go to second.)
+
+@Scene(second)
+You get wet and stub your toe in the dark.
+
+@action(Go home, Go to first).
