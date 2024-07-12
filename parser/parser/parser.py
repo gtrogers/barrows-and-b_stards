@@ -9,22 +9,27 @@ type When = Literal["when"]
 type Action = Literal["action"]
 
 type LookupNode = Tuple[Lookup, str]
-type TextNode = Tuple[Text, list[str|LookupNode]]
+type TextNode = Tuple[Text, list[str | LookupNode]]
 type WhenNode = Tuple[When, str, list[SceneNode]]
 type ActionNode = Tuple[Action, str, list[SceneNode]]
 type SceneNode = TextNode | WhenNode | ActionNode
 
-def text_node(contents: list[str|LookupNode]) -> TextNode:
+
+def text_node(contents: list[str | LookupNode]) -> TextNode:
     return ("text", contents)
+
 
 def when_node(expression: str, contents: list[SceneNode]) -> WhenNode:
     return ("when", expression, contents)
 
+
 def action_node(expression: str, contents: list[SceneNode]) -> ActionNode:
     return ("action", expression, contents)
 
+
 def lookup_node(varname: str) -> LookupNode:
     return ("lookup", varname)
+
 
 class Template:
     NODE_TYPES = ["text", "lookup", "action", "when"]
@@ -38,7 +43,7 @@ class Template:
             raise ValueError("Unknown node type: " + node[0])
         self.nodes.append(node)
 
-    def append_or_create_text(self, text_content: str|LookupNode):
+    def append_or_create_text(self, text_content: str | LookupNode):
         if len(self.nodes) == 0 or self.nodes[-1][0] != "text":
             self.add_node(text_node([text_content]))
         else:
@@ -62,21 +67,21 @@ class World:
         self.current_scene = new_scene_template
 
     def add_node_to_current(self, node: SceneNode):
-        if (self.current_scene is None):
-            raise ValueError("There is no current scene");
-        self.current_scene.add_node(node);
+        if self.current_scene is None:
+            raise ValueError("There is no current scene")
+        self.current_scene.add_node(node)
 
     def append_text_or_add_to_current(self, text: str | LookupNode):
-        if (self.current_scene is None):
-            raise ValueError("There is no current scene");
-        self.current_scene.append_or_create_text(text);
+        if self.current_scene is None:
+            raise ValueError("There is no current scene")
+        self.current_scene.append_or_create_text(text)
 
     def output(self) -> str:
         out = {}
         for k, v in self.scenes.items():
-            out[k] = { 'description': [v.nodes], 'title': [text_node([v.slug])] }
+            out[k] = {"description": [v.nodes], "title": [text_node([v.slug])]}
 
-        return json.dumps({ "scenes": out })
+        return json.dumps({"scenes": out})
 
 
 class ReadableLine:
@@ -125,7 +130,7 @@ def process_tag(name: str, args: list[str], world: World):
         case "action":
             current_scene = world.current_scene
             if current_scene is None:
-                #TODO: refactor - example of tell over ask
+                # TODO: refactor - example of tell over ask
                 raise ValueError("There is no current scene to add tags to.")
             # TODO - support proper node nesting
             current_scene.add_node(action_node(args[1], [text_node([args[0]])]))
@@ -139,7 +144,7 @@ def process_line_to_template(line: ReadableLine, world: World):
             case "@":
                 tag_name, args = line.take_tag()
                 process_tag(tag_name, args, world)
-            case '\n':
+            case "\n":
                 line.take()
                 if len(line.line) == 1:
                     if world.current_scene is None:

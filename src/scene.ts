@@ -5,11 +5,11 @@ export type WhenNode = ["when", string, SceneNodes];
 export type ActionNode = ["action", string, SceneNodes];
 export type SceneNode = TextNode | WhenNode | ActionNode;
 export type SceneNodes = SceneNode[];
-export type Action = [string, string[]]
+export type Action = [string, string[]];
 
 export interface SceneTemplate {
-  title: SceneNodes
-  description: SceneNodes[]
+  title: SceneNodes;
+  description: SceneNodes[];
 }
 
 interface Scene {
@@ -18,10 +18,18 @@ interface Scene {
   actions: Action[];
 }
 
-export type StateItem = string | number | boolean | Array<StateItem> | Map<string, StateItem>;
+export type StateItem =
+  | string
+  | number
+  | boolean
+  | Array<StateItem>
+  | Map<string, StateItem>;
 export type StateStore = Map<string, StateItem>;
 
-export function renderNodes (ns: SceneNodes, state: StateStore): [string[], Action[]] {
+export function renderNodes(
+  ns: SceneNodes,
+  state: StateStore,
+): [string[], Action[]] {
   let result: string[] = [];
   let actions: Action[] = [];
   for (let n of ns) {
@@ -30,7 +38,7 @@ export function renderNodes (ns: SceneNodes, state: StateStore): [string[], Acti
       case "text":
         const content: string[] = [];
         const children = n[1];
-        children.forEach(child => {
+        children.forEach((child) => {
           if (typeof child === "string") {
             content.push(child);
           } else {
@@ -40,13 +48,16 @@ export function renderNodes (ns: SceneNodes, state: StateStore): [string[], Acti
           }
         });
         result.push(content.join(""));
-        
+
         break;
       case "when":
         const [varName, node] = n.slice(1);
         if (state.get(varName as string)) {
           // TODO - why can't TSC figure this one out?
-          const [whenContent, whenActions] = renderNodes(node as SceneNodes, state);
+          const [whenContent, whenActions] = renderNodes(
+            node as SceneNodes,
+            state,
+          );
           result = result.concat(whenContent);
           actions = actions.concat(whenActions);
         }
@@ -54,24 +65,25 @@ export function renderNodes (ns: SceneNodes, state: StateStore): [string[], Acti
       case "action":
         const [payload, nodes] = n.slice(1);
         // TODO - actions cannot contain an action, we should error out here if they do
-        actions.push([payload as string, renderNodes(nodes as SceneNodes, state)[0]]);
+        actions.push([
+          payload as string,
+          renderNodes(nodes as SceneNodes, state)[0],
+        ]);
         break;
       default:
-        throw new Error("Unsupported node: " + n[0])
+        throw new Error("Unsupported node: " + n[0]);
     }
   }
   return [result, actions];
 }
 
 export function renderScene(st: SceneTemplate, state: StateStore): Scene {
-  const renderedScene = st.description.map(ns => renderNodes(ns, state));
+  const renderedScene = st.description.map((ns) => renderNodes(ns, state));
   return {
     title: renderNodes(st.title, state)[0][0],
-    description: renderedScene.map(rs => rs[0])[0],
-    actions: renderedScene.flatMap(rs => rs[1]),
-  }
+    description: renderedScene.map((rs) => rs[0])[0],
+    actions: renderedScene.flatMap((rs) => rs[1]),
+  };
 }
 
-export type {
-  Scene
-}
+export type { Scene };

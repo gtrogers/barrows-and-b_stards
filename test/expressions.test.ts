@@ -27,8 +27,8 @@ describe("Token running - unit tests", () => {
   const mockEngine: Engine = {
     runExpr: jest.fn(),
     set: jest.fn(),
-    loadScene: jest.fn()
-  }
+    loadScene: jest.fn(),
+  };
 
   test("Running a simple expression", () => {
     const expr = ["Go", "to", "foobar"] as TokenisedExpr;
@@ -37,8 +37,6 @@ describe("Token running - unit tests", () => {
   });
 
   test.todo("Test running multiple expressions");
-})
-
-describe("Functions - unit tests", () => {
-
 });
+
+describe("Functions - unit tests", () => {});

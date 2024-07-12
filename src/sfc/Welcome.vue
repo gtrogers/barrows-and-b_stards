@@ -8,8 +8,7 @@
 </template>
 
 <script setup>
-  import { engine } from "../engine.ts";
+import { engine } from "../engine.ts";
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

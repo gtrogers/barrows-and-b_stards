@@ -60,5 +60,5 @@ export const engine: Engine = {
   },
   newGame() {
     currentView.value = "story";
-  }
+  },
 };

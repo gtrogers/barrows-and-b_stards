@@ -25,11 +25,14 @@ describe("scene rendering - module test", () => {
     const template: SceneTemplate = {
       title: [["text", ["some title"]]],
       description,
-    }
+    };
     const result = renderScene(template, state);
-    expect(result.description).toEqual(["Ominous intro text",
-      "It was a dark and stormy night...", "The fire burned on the hearth.", "Bob was sitting alone."]
-    );
+    expect(result.description).toEqual([
+      "Ominous intro text",
+      "It was a dark and stormy night...",
+      "The fire burned on the hearth.",
+      "Bob was sitting alone.",
+    ]);
     expect(result.title).toEqual("some title");
     expect(result.actions).toEqual([
       ["Go outside.", ["Explore outside"]],
@@ -60,7 +63,11 @@ describe("scene rendering - unit tests", () => {
 
   test("Rendering a when node only displays a string when the variable is truthy", () => {
     // TODO - ideally we want to evaluate a small expression instead
-    const whenNode: WhenNode = ["when", "someNumber", [["text", ["it works!"]]]];
+    const whenNode: WhenNode = [
+      "when",
+      "someNumber",
+      [["text", ["it works!"]]],
+    ];
     const [content, _] = renderNodes([whenNode], dummyState);
     expect(content).toEqual(["it works!"]);
 

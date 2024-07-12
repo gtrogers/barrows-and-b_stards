@@ -3,7 +3,12 @@ body {
   color: #eee;
 }
 
-div, h1, h2, h3, a, button {
+div,
+h1,
+h2,
+h3,
+a,
+button {
   box-sizing: border-box;
 }
 

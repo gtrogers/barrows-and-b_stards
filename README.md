@@ -42,8 +42,8 @@ The parser (in the `./parser` directory) is written and tested in python 3. Depe
 It's recommended to use a virtual env `python -m venv [name-of-env]`
 
 #### Running the tests
+
 ```
 cd parser
 python -n unittest
 ```
-

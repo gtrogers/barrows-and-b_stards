@@ -49,10 +49,10 @@ export function parse(snippet: string): TokenisedExpr[] {
 }
 
 export function run(tokens: TokenisedExpr[], eng: Engine) {
-  tokens.forEach(expr => {
+  tokens.forEach((expr) => {
     const [funcName, ...args] = expr;
     KEYWORDS_TO_FUNCS[funcName](args, eng);
-  })
+  });
 }
 
 export function parseAndRun(expr: string, eng: Engine) {
