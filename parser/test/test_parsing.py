@@ -10,7 +10,12 @@ class TestParsing(unittest.TestCase):
         self.assertEqual(
             [
                 ["text", "It was a dark and stormy night."],
+                ["text", "The stove is "],
+                ["lookup", "stove"],
+                ["text", "."],
+                ["text", ""],
                 ["action", "Go to second.", [["text", "Take a walk"]]],
+                ["text", ""],
             ],
             world.scenes["first"].nodes,
         )

@@ -110,6 +110,10 @@ def process_line_to_template(line: ReadableLine, world: World):
                 process_tag(tag_name, args, world)
             case '\n':
                 line.take()
+                if len(line.line) == 1:
+                    if world.current_scene is None:
+                        raise ValueError("There is no scene to add tags to")
+                    world.current_scene.add_node("text", "")
             case _:
                 if world.current_scene is None:
                     raise ValueError("There are no scene templates to add text to.")

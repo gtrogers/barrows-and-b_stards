@@ -5,8 +5,9 @@ x Parse scene file to AST - basic version
 x Simple expression parser / runner
 . Add 'context' to expression running to allow chaing - e.g. Roll against stat. On success... . On failure...
 . Engine to hang eveything off of
-> Player / Roster
+. Player / Roster
 . Example RPG mechanics - rolling 2d12
+> Accomodate paragraphs and lookups within text
 
 :: Code hygiene / QoL
 . Value based error handling
