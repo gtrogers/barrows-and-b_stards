@@ -1,32 +1,54 @@
+from typing import Literal, Tuple
+
 import sys
 import json
 
+type Text = Literal["text"]
+type Lookup = Literal["lookup"]
+type When = Literal["when"]
+type Action = Literal["action"]
+
+type LookupNode = Tuple[Lookup, str]
+type TextNode = Tuple[Text, list[str|LookupNode]]
+type WhenNode = Tuple[When, str, list[SceneNode]]
+type ActionNode = Tuple[Action, str, list[SceneNode]]
+type SceneNode = TextNode | WhenNode | ActionNode
+
+def text_node(contents: list[str|LookupNode]) -> TextNode:
+    return ("text", contents)
+
+def when_node(expression: str, contents: list[SceneNode]) -> WhenNode:
+    return ("when", expression, contents)
+
+def action_node(expression: str, contents: list[SceneNode]) -> ActionNode:
+    return ("action", expression, contents)
+
+def lookup_node(varname: str) -> LookupNode:
+    return ("lookup", varname)
 
 class Template:
     NODE_TYPES = ["text", "lookup", "action", "when"]
 
     def __init__(self, slug):
-        self.nodes = []
+        self.nodes: list[SceneNode] = []
         self.slug = slug
 
-    def add_node(self, node_name: str, content: str | list):
-        if node_name not in Template.NODE_TYPES:
-            raise ValueError("Unrecognised node type: " + node_name)
+    def add_node(self, node: SceneNode):
+        if node[0] not in Template.NODE_TYPES:
+            raise ValueError("Unknown node type: " + node[0])
+        self.nodes.append(node)
 
-        new_node = [node_name]
-
-        if type(content) is str:
-            new_node.append(content)
-        else:
-            new_node += content
-
-        self.nodes.append(new_node)
-
-    def append_or_create_text(self, text_content: str):
+    def append_or_create_text(self, text_content: str|LookupNode):
         if len(self.nodes) == 0 or self.nodes[-1][0] != "text":
-            self.add_node("text", text_content)
+            self.add_node(text_node([text_content]))
         else:
-            self.nodes[-1][1] += text_content
+            if isinstance(text_content, str):
+                if isinstance(self.nodes[-1][1][-1], str):
+                    self.nodes[-1][1][-1] += text_content
+                else:
+                    self.nodes[-1][1].append(text_content)
+            else:
+                self.nodes[-1][1].append(text_content)
 
 
 class World:
@@ -39,11 +61,20 @@ class World:
         self.scenes[slug] = new_scene_template
         self.current_scene = new_scene_template
 
+    def add_node_to_current(self, node: SceneNode):
+        if (self.current_scene is None):
+            raise ValueError("There is no current scene");
+        self.current_scene.add_node(node);
+
+    def append_text_or_add_to_current(self, text: str | LookupNode):
+        if (self.current_scene is None):
+            raise ValueError("There is no current scene");
+        self.current_scene.append_or_create_text(text);
+
     def output(self) -> str:
         out = {}
         for k, v in self.scenes.items():
-            # TODO: support multi paragraphs
-            out[k] = { 'description': [v.nodes], 'title': [["text", v.slug]] }
+            out[k] = { 'description': [v.nodes], 'title': [text_node([v.slug])] }
 
         return json.dumps({ "scenes": out })
 
@@ -89,17 +120,17 @@ def process_tag(name: str, args: list[str], world: World):
     match (name):
         case "Scene":
             world.add_scene_template(args[0])
+        case "lookup":
+            world.append_text_or_add_to_current(lookup_node(args[0]))
         case "action":
             current_scene = world.current_scene
             if current_scene is None:
                 #TODO: refactor - example of tell over ask
                 raise ValueError("There is no current scene to add tags to.")
             # TODO - support proper node nesting
-            current_scene.add_node(name, [args[1], [["text", args[0]]]])
-        case _:
-            if world.current_scene is None:
-                raise ValueError("There are no scene templates to add tags to.")
-            world.current_scene.add_node(name, args)
+            current_scene.add_node(action_node(args[1], [text_node([args[0]])]))
+        case "when":
+            world.add_node_to_current(when_node(args[0], [text_node([args[1]])]))
 
 
 def process_line_to_template(line: ReadableLine, world: World):
@@ -113,7 +144,7 @@ def process_line_to_template(line: ReadableLine, world: World):
                 if len(line.line) == 1:
                     if world.current_scene is None:
                         raise ValueError("There is no scene to add tags to")
-                    world.current_scene.add_node("text", "")
+                    world.current_scene.add_node(text_node([""]))
             case _:
                 if world.current_scene is None:
                     raise ValueError("There are no scene templates to add text to.")

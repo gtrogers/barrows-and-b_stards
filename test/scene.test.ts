@@ -1,6 +1,5 @@
 import { renderNodes, renderScene } from "../src/scene.ts";
 import type {
-  LookupNode,
   TextNode,
   WhenNode,
   ActionNode,
@@ -14,28 +13,27 @@ describe("scene rendering - module test", () => {
     state.set("fire", true);
     state.set("playerName", "Bob");
     const description: SceneNodes[] = [
-      [["text", "Ominous intro text"]],
       [
-        ["text", "It was a dark and stormy night..."],
-        ["when", "fire", [["text", "The fire burned on the hearth."]]],
-        ["lookup", "playerName"],
-        ["text", "was sitting alone."],
-        ["action", "Go outside.", [["text", "Explore outside"]]],
-        ["action", "Reload.", [["text", "Stay put"]]],
+        ["text", ["Ominous intro text"]],
+        ["text", ["It was a dark and stormy night..."]],
+        ["when", "fire", [["text", ["The fire burned on the hearth."]]]],
+        ["text", [["lookup", "playerName"], " was sitting alone."]],
+        ["action", "Go outside.", [["text", ["Explore outside"]]]],
+        ["action", "Reload.", [["text", ["Stay put"]]]],
       ],
     ];
     const template: SceneTemplate = {
-      title: [["text", "some title"]],
+      title: [["text", ["some title"]]],
       description,
     }
     const result = renderScene(template, state);
     expect(result.description).toEqual(["Ominous intro text",
-      "It was a dark and stormy night... The fire burned on the hearth. Bob was sitting alone."]
+      "It was a dark and stormy night...", "The fire burned on the hearth.", "Bob was sitting alone."]
     );
     expect(result.title).toEqual("some title");
     expect(result.actions).toEqual([
-      ["Go outside.", "Explore outside"],
-      ["Reload.", "Stay put"],
+      ["Go outside.", ["Explore outside"]],
+      ["Reload.", ["Stay put"]],
     ]);
   });
 });
@@ -48,37 +46,37 @@ describe("scene rendering - unit tests", () => {
   });
 
   test("Rendering a text node to a string", () => {
-    const textNode: TextNode = ["text", "Hello World"];
-    const result = renderNodes([textNode], dummyState);
-    expect(result[0]).toEqual("Hello World");
+    const textNode: TextNode = ["text", ["Hello World"]];
+    const [content, _] = renderNodes([textNode], dummyState);
+    expect(content).toEqual(["Hello World"]);
   });
 
   test("Rendering a lookup node to a string grabs the variable and converts it to a string", () => {
     // TODO - test toString on all variables
-    const lookupNode: LookupNode = ["lookup", "someNumber"];
-    const result = renderNodes([lookupNode], dummyState);
-    expect(result[0]).toEqual("123");
+    const lookupNode: TextNode = ["text", [["lookup", "someNumber"]]];
+    const [content, _] = renderNodes([lookupNode], dummyState);
+    expect(content).toEqual(["123"]);
   });
 
-  test("Rendering a when node only displays a string when the variable is true", () => {
+  test("Rendering a when node only displays a string when the variable is truthy", () => {
     // TODO - ideally we want to evaluate a small expression instead
-    const whenNode: WhenNode = ["when", "someNumber", [["text", "it works!"]]];
-    const positiveResult = renderNodes([whenNode], dummyState);
-    expect(positiveResult[0]).toEqual("it works!");
+    const whenNode: WhenNode = ["when", "someNumber", [["text", ["it works!"]]]];
+    const [content, _] = renderNodes([whenNode], dummyState);
+    expect(content).toEqual(["it works!"]);
 
-    const whenNode2: WhenNode = ["when", "blank", [["text", "whatever"]]];
-    const negativeResult = renderNodes([whenNode2], dummyState);
-    expect(negativeResult[0]).toEqual("");
+    const whenNode2: WhenNode = ["when", "blank", [["text", ["whatever"]]]];
+    const [noContent, __] = renderNodes([whenNode2], dummyState);
+    expect(noContent).toHaveLength(0);
   });
 
   test("Renders actions into seperate list", () => {
     const actionNode: ActionNode = [
       "action",
       "some payload",
-      [["text", "click me"]],
+      [["text", ["click me"]]],
     ];
-    const result = renderNodes([actionNode], dummyState);
-    expect(result[0]).toEqual("");
-    expect(result[1]).toEqual([["some payload", "click me"]]);
+    const [content, actions] = renderNodes([actionNode], dummyState);
+    expect(content).toEqual([]);
+    expect(actions).toEqual([["some payload", ["click me"]]]);
   });
 });
