@@ -1,34 +1,19 @@
-from typing import Literal, Tuple
-
+from os import linesep
 import sys
 import json
 
-type Text = Literal["text"]
-type Lookup = Literal["lookup"]
-type When = Literal["when"]
-type Action = Literal["action"]
 
-type LookupNode = Tuple[Lookup, str]
-type TextNode = Tuple[Text, list[str | LookupNode]]
-type WhenNode = Tuple[When, str, list[SceneNode]]
-type ActionNode = Tuple[Action, str, list[SceneNode]]
-type SceneNode = TextNode | WhenNode | ActionNode
-
-
-def text_node(contents: list[str | LookupNode]) -> TextNode:
-    return ("text", contents)
-
-
-def when_node(expression: str, contents: list[SceneNode]) -> WhenNode:
-    return ("when", expression, contents)
-
-
-def action_node(expression: str, contents: list[SceneNode]) -> ActionNode:
-    return ("action", expression, contents)
-
-
-def lookup_node(varname: str) -> LookupNode:
-    return ("lookup", varname)
+from parser.nodes import (
+    text_node,
+    when_node,
+    action_node,
+    lookup_node,
+    meta_node,
+    SceneNode,
+    LookupNode,
+    MetaNode,
+    append_to_text_node,
+)
 
 
 class Template:
@@ -117,54 +102,77 @@ class ReadableLine:
 
         self.take()
         tag_text = self.take_until(")")[0:-1]
-        tag_name, rest = tag_text.split("(")
-        return tag_name, [s.strip() for s in rest.split(",")]
+
+        # HACK: parsing nested tags is currently a hack and will only
+        #       with two arguments and a nesting of two.
+        #       There's likely a better way to do this using regex
+        nested = self.peek() == ")"
+        if nested:
+            self.take()
+
+        tag_name, rest = tag_text.split("(", maxsplit=1)
+        args = [s.strip() for s in rest.split(",", maxsplit=1)]
+
+        if nested and len(args) == 2:
+            args[1] += ')'
+
+        return tag_name, args
 
 
-def process_tag(name: str, args: list[str], world: World):
+def process_tag(name: str, args: list[str]) -> SceneNode | MetaNode:
     match (name):
         case "Scene":
-            world.add_scene_template(args[0])
+            return meta_node("Scene", args)
         case "lookup":
-            world.append_text_or_add_to_current(lookup_node(args[0]))
+            return lookup_node(args[0])
         case "action":
-            current_scene = world.current_scene
-            if current_scene is None:
-                # TODO: refactor - example of tell over ask
-                raise ValueError("There is no current scene to add tags to.")
-            # TODO - support proper node nesting
-            current_scene.add_node(action_node(args[1], [text_node([args[0]])]))
+            if args[0][0] == "@":
+                rl = ReadableLine(args[0])
+                nodes = process_line(rl)
+                return action_node(args[1], nodes)
+            else:
+                return action_node(args[1], [text_node([args[0]])])
         case "when":
-            world.add_node_to_current(when_node(args[0], [text_node([args[1]])]))
+            if args[1][0] == "@":
+                rl = ReadableLine(args[1])
+                nodes = process_line(rl)
+                return when_node(args[0], nodes)
+            return when_node(args[0], [text_node([args[1]])])
 
 
-def process_line_to_template(line: ReadableLine, world: World):
+def process_line(line: ReadableLine) -> list[SceneNode]:
+    nodes: list[SceneNode] = []
+    current_text_node = text_node([])
     while current_char := line.peek():
         match current_char:
             case "@":
-                tag_name, args = line.take_tag()
-                process_tag(tag_name, args, world)
-            case "\n":
+                node = process_tag(*line.take_tag())
+                if node[0] == "lookup":
+                    append_to_text_node(current_text_node, node)
+                else:
+                    nodes.append(node)
+            case '\n':
                 line.take()
-                if len(line.line) == 1:
-                    if world.current_scene is None:
-                        raise ValueError("There is no scene to add tags to")
-                    world.current_scene.add_node(text_node([""]))
             case _:
-                if world.current_scene is None:
-                    raise ValueError("There are no scene templates to add text to.")
-                char = line.take()
-                # FIXME - this is a typing thing, we know char is never None here
-                # TODO - this is likely very slow and would benefit from a string builder
-                #        or similar pattern
-                world.current_scene.append_or_create_text(char or "")
+                append_to_text_node(current_text_node, current_char)
+                line.take()
+
+    if len(current_text_node[1]) > 0:
+        nodes.append(current_text_node)
+
+    return nodes
 
 
 def parse_file_to_template(file_path: str, world: World):
     with open(file_path) as f:
         for raw_line in f.readlines():
             line = ReadableLine(raw_line)
-            process_line_to_template(line, world)
+            nodes = process_line(line)
+            for node in nodes:
+                if node[0] == "meta" and node[1] == "Scene":
+                    world.add_scene_template(node[2][0])
+                else:
+                    world.add_node_to_current(node)
 
 
 def run(path):

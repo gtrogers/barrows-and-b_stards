@@ -52,6 +52,14 @@ class TestReadableLine(unittest.TestCase):
         self.assertEqual("lookup", tag_name)
         self.assertEqual(["foo", "bar"], args)
 
+    def test_taking_a_nested_tag(self):
+        line = ReadableLine("@when(something, @action(Foobar, Do it.))")
+
+        tag_name, args = line.take_tag()
+        self.assertEqual("when", tag_name)
+        self.assertEqual("something", args[0])
+        self.assertEqual("@action(Foobar, Do it.)", args[1])
+
     def test_raises_error_when_not_at_tag(self):
         line = ReadableLine("no tags here")
         self.assertRaises(IndexError, lambda: line.take_tag())

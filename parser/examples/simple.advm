@@ -4,6 +4,7 @@ It was a dark and stormy night.
 The stove is @lookup(stove).
 
 @action(Take a walk, Go to second.)
+@when(stove, @action(Make some tea, Do nothing.))
 
 @Scene(second)
 You get wet and stub your toe in the dark.
