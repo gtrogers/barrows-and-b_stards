@@ -28,6 +28,7 @@ describe("Token running - unit tests", () => {
     runExpr: jest.fn(),
     set: jest.fn(),
     loadScene: jest.fn(),
+    newGame: jest.fn(),
   };
 
   test("Running a simple expression", () => {
