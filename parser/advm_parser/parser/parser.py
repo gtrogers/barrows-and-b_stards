@@ -9,56 +9,40 @@ from advm_parser.parser.nodes import (
     lookup_node,
     meta_node,
     SceneNode,
-    LookupNode,
     MetaNode,
     append_to_text_node,
 )
 
 
-class Template:
-    NODE_TYPES = ["text", "lookup", "action", "when"]
+class Scene:
+    VALID_NODE_TYPES = ["text", "lookup", "action", "when"]
 
     def __init__(self, slug):
         self.nodes: list[SceneNode] = []
         self.slug = slug
 
     def add_node(self, node: SceneNode):
-        if node[0] not in Template.NODE_TYPES:
+        if node[0] not in Scene.VALID_NODE_TYPES:
             raise ValueError("Unknown node type: " + node[0])
         self.nodes.append(node)
-
-    def append_or_create_text(self, text_content: str | LookupNode):
-        if len(self.nodes) == 0 or self.nodes[-1][0] != "text":
-            self.add_node(text_node([text_content]))
-        else:
-            if isinstance(text_content, str):
-                if isinstance(self.nodes[-1][1][-1], str):
-                    self.nodes[-1][1][-1] += text_content
-                else:
-                    self.nodes[-1][1].append(text_content)
-            else:
-                self.nodes[-1][1].append(text_content)
 
 
 class World:
     def __init__(self):
         self.scenes = {}
-        self.current_scene: None | Template = None
+        self.current_scene: None | Scene = None
 
-    def add_scene_template(self, slug):
-        new_scene_template = Template(slug)
+    def add_scene(self, slug):
+        new_scene_template = Scene(slug)
         self.scenes[slug] = new_scene_template
         self.current_scene = new_scene_template
 
-    def add_node_to_current(self, node: SceneNode):
+    def add_node_to_current_scene(self, node: SceneNode):
         if self.current_scene is None:
-            raise ValueError("There is no current scene")
+            raise ValueError("No scene exists to add node to")
+
         self.current_scene.add_node(node)
 
-    def append_text_or_add_to_current(self, text: str | LookupNode):
-        if self.current_scene is None:
-            raise ValueError("There is no current scene")
-        self.current_scene.append_or_create_text(text)
 
     def output(self) -> str:
         out = {}
@@ -169,9 +153,9 @@ def parse_file_to_template(file_path: str, world: World):
             nodes = process_line(line)
             for node in nodes:
                 if node[0] == "meta" and node[1] == "Scene":
-                    world.add_scene_template(node[2][0])
+                    world.add_scene(node[2][0])
                 else:
-                    world.add_node_to_current(node)
+                    world.add_node_to_current_scene(node)
 
 
 def run(path):
