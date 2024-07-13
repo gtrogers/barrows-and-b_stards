@@ -1,9 +1,8 @@
-from os import linesep
 import sys
 import json
 
 
-from parser.nodes import (
+from advm_parser.parser.nodes import (
     text_node,
     when_node,
     action_node,

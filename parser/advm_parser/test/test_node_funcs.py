@@ -1,6 +1,6 @@
 import unittest
 
-from parser.nodes import text_node, append_to_text_node, lookup_node
+from advm_parser.parser.nodes import text_node, append_to_text_node, lookup_node
 
 class TestNodeFuncs(unittest.TestCase):
     def test_appending_text_to_text(self):

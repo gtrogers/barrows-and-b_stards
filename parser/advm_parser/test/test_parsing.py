@@ -1,6 +1,6 @@
 import unittest
-from parser.parser import parse_file_to_template, World, process_tag, ReadableLine, process_line
-from parser.nodes import meta_node, lookup_node, action_node, text_node, when_node
+from advm_parser.parser.parser import parse_file_to_template, World, process_tag, ReadableLine, process_line
+from advm_parser.parser.nodes import meta_node, lookup_node, action_node, text_node, when_node
 
 
 class TestParsing(unittest.TestCase):

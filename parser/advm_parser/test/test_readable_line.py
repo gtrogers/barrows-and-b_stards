@@ -1,6 +1,6 @@
 import unittest
 
-from parser.parser import ReadableLine
+from advm_parser.parser.parser import ReadableLine
 
 
 class TestReadableLine(unittest.TestCase):

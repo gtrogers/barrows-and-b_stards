@@ -1,7 +1,7 @@
 import unittest
 
-from parser.parser import Template
-from parser.parser import action_node, text_node
+from advm_parser.parser.parser import Template
+from advm_parser.parser.parser import action_node, text_node
 
 
 class TestTemplate(unittest.TestCase):
