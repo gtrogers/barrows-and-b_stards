@@ -33,12 +33,12 @@ You are outside. The moon looms overhead.
 
 @action(Light a candle., Set candle to true.)
 @action(Go back inside, Go to a-dark-room.)
+```
 
 The above file will create two scenes (or rooms) which the player can move between.
 
 Adventure markup files (ending in .advm) can be compiled to json and then run
 using the vue/typescript half of this project.
-```
 
 ## Development
 
