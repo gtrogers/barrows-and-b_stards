@@ -3,5 +3,9 @@ import vueJsx from "@vitejs/plugin-vue-jsx";
 import { defineConfig } from "vite";
 
 export default defineConfig({
+  test: {
+    globals: true,
+    environment: "jsdom",
+  },
   plugins: [vueJsx(), vue()],
 });

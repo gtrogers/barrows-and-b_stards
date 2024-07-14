@@ -31,6 +31,7 @@ describe("", () => {
     set: vi.fn(),
     loadScene: vi.fn(),
     newGame: vi.fn(),
+    gotoScreen: vi.fn(),
   };
 
   test("Running a simple expression", () => {

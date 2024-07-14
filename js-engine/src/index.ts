@@ -1,4 +1,4 @@
-import { createApp } from "vue/dist/vue.runtime.esm-bundler";
+import { createApp } from "vue";
 import App from "./App.vue";
 
 const app = createApp(App);

@@ -34,3 +34,8 @@ h1 {
 .left {
   text-align: left;
 }
+
+.input-wrapper {
+  margin: 0.4em 0;
+  width: 100%;
+}

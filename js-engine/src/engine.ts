@@ -7,6 +7,7 @@ import simple from "../../story/simple.advm.json";
 
 import Welcome from "./sfc/Welcome.vue";
 import Story from "./sfc/SceneView.vue";
+import PartyCreator from "./sfc/PartyCreator.vue";
 
 const scenes = simple;
 const state = new Map();
@@ -19,12 +20,15 @@ export const currentScene = computed<Scene>(() => {
   return renderScene(activeTemplate, state);
 });
 
-type View = "welcome" | "story";
-const currentView = ref<View>("welcome");
 const views = {
   welcome: Welcome,
   story: Story,
+  partyCreator: PartyCreator,
 };
+
+type View = keyof typeof views;
+const currentView = ref<View>("welcome");
+
 export const activeView = computed(() => views[currentView.value]);
 
 export interface Engine {
@@ -32,6 +36,7 @@ export interface Engine {
   set: (k: string, v: StateItem) => void;
   loadScene: (name: string) => void;
   newGame: () => void;
+  gotoScreen: (screenName: View) => void;
 }
 
 /***
@@ -59,6 +64,13 @@ export const engine: Engine = {
     swapScene(name);
   },
   newGame() {
-    currentView.value = "story";
+    currentView.value = "partyCreator";
   },
+  gotoScreen(screen: View) {
+    const newView = views[screen];
+    if (!newView) {
+      throw new Error("No such view " + screen);
+    }
+    currentView.value = screen;
+  }
 };
