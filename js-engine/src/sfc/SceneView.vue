@@ -9,7 +9,7 @@
         :key="a[0] + currentScene.title"
         @click="engine.runExpr(a[0])"
       >
-        {{ a[1] }}
+      <span v-for="p in a[1]">{{ p }}</span>
       </button>
     </div>
   </Transition>
