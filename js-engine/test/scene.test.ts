@@ -1,3 +1,5 @@
+import { test, describe, beforeAll, expect, vi } from "vitest";
+
 import { renderNodes, renderScene } from "../src/scene.ts";
 import type {
   TextNode,
@@ -7,7 +9,7 @@ import type {
   SceneTemplate,
 } from "../src/scene.ts";
 
-describe("scene rendering - module test", () => {
+describe("End to end", () => {
   test("Render a scene and actions", () => {
     const state = new Map();
     state.set("fire", true);
@@ -43,7 +45,7 @@ describe("scene rendering - module test", () => {
 
 const dummyState = new Map();
 
-describe("scene rendering - unit tests", () => {
+describe("Scene - unit tests", () => {
   beforeAll(() => {
     dummyState.set("someNumber", 123);
   });

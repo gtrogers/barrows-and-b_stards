@@ -3,7 +3,7 @@ import { renderScene } from "./scene.ts";
 import type { SceneTemplate, Scene, StateItem } from "./scene.ts";
 import { parseAndRun } from "./expressions.ts";
 
-import simple from "../story/simple.advm.json";
+import simple from "../../story/simple.advm.json";
 
 import Welcome from "./sfc/Welcome.vue";
 import Story from "./sfc/SceneView.vue";

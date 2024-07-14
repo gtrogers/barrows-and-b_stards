@@ -1,12 +1,14 @@
-import type { Engine } from "../src/engine";
-import { parseAndRun, parse, run } from "../src/expressions";
-import type { TokenisedExpr } from "../src/expressions";
+import { test, describe, expect, vi } from "vitest";
+
+import type { Engine } from "../src/engine.ts";
+import { parseAndRun, parse, run } from "../src/expressions.ts";
+import type { TokenisedExpr } from "../src/expressions.ts";
 
 describe("Expressions - module test", () => {
-  test.todo("Parsing and running an expression");
+test.todo("Parsing and running an expression");
 });
 
-describe("Expression parsing - unit tests", () => {
+describe("Expressions - test parsing", () => {
   test("Parse a single expression to tokens", () => {
     const expr = "Go to foobar.";
     const result = parse(expr);
@@ -23,12 +25,12 @@ describe("Expression parsing - unit tests", () => {
   });
 });
 
-describe("Token running - unit tests", () => {
+describe("", () => {
   const mockEngine: Engine = {
-    runExpr: jest.fn(),
-    set: jest.fn(),
-    loadScene: jest.fn(),
-    newGame: jest.fn(),
+    runExpr: vi.fn(),
+    set: vi.fn(),
+    loadScene: vi.fn(),
+    newGame: vi.fn(),
   };
 
   test("Running a simple expression", () => {
@@ -40,4 +42,3 @@ describe("Token running - unit tests", () => {
   test.todo("Test running multiple expressions");
 });
 
-describe("Functions - unit tests", () => {});
