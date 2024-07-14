@@ -3,16 +3,16 @@ import { renderScene } from "./scene.ts";
 import type { SceneTemplate, Scene, StateItem } from "./scene.ts";
 import { parseAndRun } from "./expressions.ts";
 
-import simple from "../../story/simple.advm.json";
+import gamefile from "../../story/game.advm.json";
 
 import Welcome from "./sfc/Welcome.vue";
 import Story from "./sfc/SceneView.vue";
 import PartyCreator from "./sfc/PartyCreator.vue";
 
-const scenes = simple;
+const scenes = gamefile;
 const state = new Map();
 const activeTemplate = reactive<SceneTemplate>({
-  ...(simple.scenes.first as SceneTemplate),
+  ...(gamefile.scenes.intro as SceneTemplate),
 });
 export const currentScene = computed<Scene>(() => {
   // TODO - typescript really dislikes the recursive types here, perhaps they can be simplified?

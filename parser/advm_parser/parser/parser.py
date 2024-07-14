@@ -1,4 +1,3 @@
-import sys
 import json
 
 
@@ -163,6 +162,3 @@ def run(path):
     parse_file_to_template(path, world)
     print(world.output())
 
-
-if __name__ == "__main__":
-    run(sys.argv[1])
