@@ -4,6 +4,15 @@ You are sitting in the back of a smokey tavern. The smell of sour beer and smoke
 
 @action(Go outside, Go outside.)
 @action(Wait and see what happens, Go to waiting.)
+@when(guard, @action(Look for Hopfa, Go to hopfa.))
+
+@Scene(hopfa)
+
+An elderly man sits alone in the corner wreathed in pipesmoke.
+
+He nurses a small glass of dark liquid and glances sourly around the tavern.
+
+END OF DEMO...
 
 @Scene(waiting)
 
@@ -17,3 +26,11 @@ You are outside a rundown tarven. A crooked sign identifies it as the 'Dog and D
 Drifts of snow melt in the corners of the dirty alley and a chill wind sweeps down the street.
 
 @action(Head inside, Go to intro.)
+@action(Talk to guard, Set guard to true. Go to guard.)
+
+@Scene(guard)
+The grizzled guard looks you up and down.
+
+"The man you want is Hopfa, you'll find him inside..."
+
+@action(Go back inside, Go to intro.)
