@@ -1,11 +1,11 @@
-import type { Engine } from "./engine";
+import type { Engine } from "./engine.ts";
 
 type ExpressionError = { error: string };
 type ExpressionFunc = (args: string[], eng: Engine) => void | ExpressionError;
-type FuncName = "Go" | "Set" | "Roll";
+type FuncName = "Go" | "Set";
 export type TokenisedExpr = [FuncName, ...string[]];
 
-const KEYWORDS_TO_FUNCS: Record<FuncName, ExpressionFunc> = {
+export const KEYWORDS_TO_FUNCS: Record<FuncName, ExpressionFunc> = {
   Go: (args: string[], eng: Engine) => {
     const sceneName = args.at(-1);
     if (!sceneName) {
@@ -18,9 +18,6 @@ const KEYWORDS_TO_FUNCS: Record<FuncName, ExpressionFunc> = {
     const [k, _, v] = args;
     if (!k || !v) return { error: "A key and value are required for Set" };
     eng.set(k, v);
-  },
-  Roll: (args: string[], eng: Engine) => {
-    const [stat, _] = args;
   },
 };
 
