@@ -6,6 +6,7 @@ from advm_parser.parser.nodes import (
     when_node,
     action_node,
     lookup_node,
+    setup_node,
     meta_node,
     SceneNode,
     MetaNode,
@@ -120,6 +121,8 @@ def process_tag(name: str, args: list[str]) -> SceneNode | MetaNode:
                 nodes = process_line(rl)
                 return when_node(args[0], nodes)
             return when_node(args[0], [text_node([args[1]])])
+        case "setup":
+            return setup_node(args[0])
 
 
 def process_line(line: ReadableLine) -> list[SceneNode]:

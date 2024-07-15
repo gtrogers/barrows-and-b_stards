@@ -4,27 +4,34 @@ x Render AST to scene
 x Parse scene file to AST - basic version
 x Simple expression parser / runner
 . Add 'context' to expression running to allow chaing - e.g. Roll against stat. On success... . On failure...
-. Engine to hang eveything off of
-. Player / Roster creation
+x Engine to hang eveything off of
+x Player / Roster creation (proof of concept)
 . Example RPG mechanics - rolling 2d12
 x Accomodate paragraphs and lookups within text
+. Better feedback when button is clicked
+> Setup node
+. Unless node
 
 :: Code hygiene / QoL
 . Value based error handling
 . Negative / unhappy path testing
+x Run tests on push
 
 :: More features
 . 'Directive' node to run expressions
 . Dice roller
 . Map
 . Save / Load a game
+. Validation and feedback from parser - e.g. badly formed expressions
 
 :: Game content
 . Party creation
 . Dungeons to explore
 
+:: Deployment
+. Push to github pages on successful test
+
 :: UI
 . Side bar
 . Inventory / party screen
 . Make it look nice
-. Better feedback when button is clicked

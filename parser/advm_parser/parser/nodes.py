@@ -6,13 +6,14 @@ type Lookup = Literal["lookup"]
 type When = Literal["when"]
 type Action = Literal["action"]
 type Meta = Literal["meta"]
-
+type Setup = Literal["setup"]
 
 type LookupNode = Tuple[Lookup, str]
 type TextNode = Tuple[Text, list[str | LookupNode]]
 type WhenNode = Tuple[When, str, list[SceneNode]]
 type ActionNode = Tuple[Action, str, list[SceneNode]]
-type SceneNode = TextNode | WhenNode | ActionNode
+type SetupNode = Tuple[Setup, str]
+type SceneNode = TextNode | WhenNode | ActionNode | SetupNode
 type MetaNode = Tuple[Meta, str, list[str]]
 
 
@@ -34,6 +35,10 @@ def lookup_node(varname: str) -> LookupNode:
 
 def meta_node(name: str, args: list[str]) -> MetaNode:
     return ("meta", name, args)
+
+
+def setup_node(expression: str) -> SetupNode:
+    return ("setup", expression)
 
 
 def append_to_text_node(text_node, content: str | LookupNode):

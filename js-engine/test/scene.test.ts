@@ -1,6 +1,7 @@
 import { test, describe, beforeAll, expect, vi } from "vitest";
 
 import { renderNodes, renderScene } from "../src/scene.ts";
+import type { Engine } from "../src/engine.ts";
 import type {
   TextNode,
   WhenNode,
@@ -9,6 +10,7 @@ import type {
   SceneTemplate,
 } from "../src/scene.ts";
 
+
 describe("End to end", () => {
   test("Render a scene and actions", () => {
     const state = new Map();
@@ -16,6 +18,7 @@ describe("End to end", () => {
     state.set("playerName", "Bob");
     const description: SceneNodes[] = [
       [
+        ["setup", "Set fire to false."],
         ["text", ["Ominous intro text"]],
         ["text", ["It was a dark and stormy night..."]],
         ["when", "fire", [["text", ["The fire burned on the hearth."]]]],
@@ -40,6 +43,7 @@ describe("End to end", () => {
       ["Go outside.", ["Explore outside"]],
       ["Reload.", ["Stay put"]],
     ]);
+    expect(result.setup).toEqual(["Set fire to false."]);
   });
 });
 

@@ -3,7 +3,8 @@ export type TextNode = ["text", TextNodeChildren[]];
 export type LookupNode = ["lookup", string];
 export type WhenNode = ["when", string, SceneNodes];
 export type ActionNode = ["action", string, SceneNodes];
-export type SceneNode = TextNode | WhenNode | ActionNode;
+export type SetupNode = ["setup", string];
+export type SceneNode = TextNode | WhenNode | ActionNode | SetupNode;
 export type SceneNodes = SceneNode[];
 export type Action = [string, string[]];
 
@@ -16,6 +17,7 @@ interface Scene {
   description: string[];
   title: string;
   actions: Action[];
+  setup: string[];
 }
 
 export type StateItem =
@@ -29,9 +31,10 @@ export type StateStore = Map<string, StateItem>;
 export function renderNodes(
   ns: SceneNodes,
   state: StateStore,
-): [string[], Action[]] {
+): [string[], Action[], string[]] {
   let result: string[] = [];
   let actions: Action[] = [];
+  let setup: string[] = [];
   for (let n of ns) {
     const nodeType = n[0];
     switch (nodeType) {
@@ -70,11 +73,15 @@ export function renderNodes(
           renderNodes(nodes as SceneNodes, state)[0],
         ]);
         break;
+      case "setup":
+        const expression = n[1];
+        setup.push(expression);
+        break;
       default:
         throw new Error("Unsupported node: " + n[0]);
     }
   }
-  return [result, actions];
+  return [result, actions, setup];
 }
 
 export function renderScene(st: SceneTemplate, state: StateStore): Scene {
@@ -83,6 +90,7 @@ export function renderScene(st: SceneTemplate, state: StateStore): Scene {
     title: renderNodes(st.title, state)[0][0],
     description: renderedScene.map((rs) => rs[0])[0],
     actions: renderedScene.flatMap((rs) => rs[1]),
+    setup: renderedScene.flatMap(rs => rs[2]),
   };
 }
 

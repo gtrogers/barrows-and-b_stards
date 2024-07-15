@@ -45,10 +45,11 @@ export interface Engine {
  *
  * N.B - we have to update properties to maintain the Vue's reactivity.
  ***/
-function swapScene(slug: string) {
+function swapScene(slug: string, engine: Engine) {
   console.log("Swapping scene: " + slug);
   // TODO: proper scene management - where does the scenefile come from?
   const newScene = scenes.scenes[slug];
+  newScene.setup.map(engine.runExpr);
   activeTemplate.title = newScene.title;
   activeTemplate.description = newScene.description;
 }

@@ -1,6 +1,6 @@
 import unittest
 from advm_parser.parser.parser import parse_file_to_template, World, process_tag, ReadableLine, process_line
-from advm_parser.parser.nodes import meta_node, lookup_node, action_node, text_node, when_node
+from advm_parser.parser.nodes import meta_node, lookup_node, action_node, text_node, when_node, setup_node
 
 
 class TestParsing(unittest.TestCase):
@@ -62,6 +62,11 @@ class TestParsingTags(unittest.TestCase):
         args = ["some-var-name", "@action(hello, some expression)"]
         node = process_tag(tag_name, args)
         self.assertEqual(when_node("some-var-name", [action_node("some expression", [text_node(["hello"])])]), node)
+    def test_parsing_setup_tag(self):
+        tag_name = "setup"
+        args = ["Go to foo."]
+        node = process_tag(tag_name, args)
+        self.assertEqual(setup_node("Go to foo."), node)
 
 
 class TestParsingLines(unittest.TestCase):
