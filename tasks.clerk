@@ -11,14 +11,16 @@ x Accomodate paragraphs and lookups within text
 . Better feedback when button is clicked
 > Setup node
 . Unless node
+. Persist on refresh
 
 :: Code hygiene / QoL
 . Value based error handling
 . Negative / unhappy path testing
 x Run tests on push
+. Engine should really be a class
 
 :: More features
-. 'Directive' node to run expressions
+x 'Directive' node to run expressions
 . Dice roller
 . Map
 . Save / Load a game
