@@ -1,7 +1,7 @@
 <template>
   <h1>Barrows & B'stards</h1>
   <div class="button-group">
-    <button class="action-button" @click="engine.newGame()">New Game</button>
+    <button class="action-button" @click="engine.gotoScreen('story')">New Game</button>
     <button class="action-button">Load</button>
     <a class="action-button" href="#">GitHub</a>
   </div>

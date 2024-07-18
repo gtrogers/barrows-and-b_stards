@@ -32,6 +32,8 @@ const currentView = ref<View>("welcome");
 export const activeView = computed(() => views[currentView.value]);
 
 export interface Engine {
+  afterSceneLoad: () => void;
+  visitedScenes: string[];
   runExpr: (expr: string) => void;
   set: (k: string, v: StateItem) => void;
   loadScene: (name: string) => void;
@@ -45,16 +47,23 @@ export interface Engine {
  *
  * N.B - we have to update properties to maintain the Vue's reactivity.
  ***/
-function swapScene(slug: string, engine: Engine) {
+function swapScene(slug: string) {
   console.log("Swapping scene: " + slug);
-  // TODO: proper scene management - where does the scenefile come from?
   const newScene = scenes.scenes[slug];
-  newScene.setup.map(engine.runExpr);
   activeTemplate.title = newScene.title;
   activeTemplate.description = newScene.description;
 }
 
 export const engine: Engine = {
+  visitedScenes: [],
+  afterSceneLoad() {
+    if (this.visitedScenes.indexOf(currentScene.value.title) < 0) {
+      console.info("Running one time setup for scene: ", currentScene.value.title);
+      currentScene.value.setup.forEach((s) => this.runExpr(s));
+      this.visitedScenes.push(currentScene.value.title);
+    }
+    // TODO - seperate title and slug
+  },
   runExpr(expr: string) {
     parseAndRun(expr, this);
   },
@@ -63,6 +72,7 @@ export const engine: Engine = {
   },
   loadScene(name: string) {
     swapScene(name);
+    this.afterSceneLoad();
   },
   newGame() {
     currentView.value = "partyCreator";
@@ -73,5 +83,5 @@ export const engine: Engine = {
       throw new Error("No such view " + screen);
     }
     currentView.value = screen;
-  }
+  },
 };
