@@ -8,6 +8,8 @@ import type {
   ActionNode,
   SceneNodes,
   SceneTemplate,
+  UnlessNode,
+  SetupNode,
 } from "../src/scene.ts";
 
 
@@ -82,6 +84,17 @@ describe("Scene - unit tests", () => {
     expect(noContent).toHaveLength(0);
   });
 
+  test("Rendering an unless node only displays when the value is falsey", () => {
+    const unlessNode: UnlessNode = [
+      "unless",
+      "someVal",
+      [["text", ["hello"]]]
+    ];
+
+    const [content, _] = renderNodes([unlessNode], dummyState);
+    expect(content).toEqual(["hello"]);
+  });
+
   test("Renders actions into seperate list", () => {
     const actionNode: ActionNode = [
       "action",
@@ -91,5 +104,16 @@ describe("Scene - unit tests", () => {
     const [content, actions] = renderNodes([actionNode], dummyState);
     expect(content).toEqual([]);
     expect(actions).toEqual([["some payload", ["click me"]]]);
+  });
+
+  test("Renders setup into a seperate list", () => {
+    const setupNode: SetupNode = [
+      "setup",
+      "Do a thing."
+    ];
+
+    const [_, __, setup] = renderNodes([setupNode], dummyState);
+
+    expect(setup).toEqual(["Do a thing."]);
   });
 });

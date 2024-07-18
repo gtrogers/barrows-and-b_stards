@@ -2,9 +2,15 @@ type TextNodeChildren = LookupNode | string;
 export type TextNode = ["text", TextNodeChildren[]];
 export type LookupNode = ["lookup", string];
 export type WhenNode = ["when", string, SceneNodes];
+export type UnlessNode = ["unless", string, SceneNodes];
 export type ActionNode = ["action", string, SceneNodes];
 export type SetupNode = ["setup", string];
-export type SceneNode = TextNode | WhenNode | ActionNode | SetupNode;
+export type SceneNode =
+  | TextNode
+  | WhenNode
+  | UnlessNode
+  | ActionNode
+  | SetupNode;
 export type SceneNodes = SceneNode[];
 export type Action = [string, string[]];
 
@@ -30,7 +36,7 @@ export type StateStore = Map<string, StateItem>;
 
 export function renderNodes(
   ns: SceneNodes,
-  state: StateStore,
+  state: StateStore
 ): [string[], Action[], string[]] {
   let result: string[] = [];
   let actions: Action[] = [];
@@ -53,18 +59,31 @@ export function renderNodes(
         result.push(content.join(""));
 
         break;
-      case "when":
+      case "when": {
         const [varName, node] = n.slice(1);
         if (state.get(varName as string)) {
           // TODO - why can't TSC figure this one out?
           const [whenContent, whenActions] = renderNodes(
             node as SceneNodes,
-            state,
+            state
           );
           result = result.concat(whenContent);
           actions = actions.concat(whenActions);
         }
         break;
+      }
+      case "unless": {
+        const [varName, nodes] = n.slice(1);
+        if (!state.get(varName as string)) {
+          const [unlessContent, unlessActions] = renderNodes(
+            nodes as SceneNodes,
+            state
+          );
+          result = result.concat(unlessContent);
+          actions = actions.concat(unlessActions);
+        }
+        break;
+      }
       case "action":
         const [payload, nodes] = n.slice(1);
         // TODO - actions cannot contain an action, we should error out here if they do
@@ -90,7 +109,7 @@ export function renderScene(st: SceneTemplate, state: StateStore): Scene {
     title: renderNodes(st.title, state)[0][0],
     description: renderedScene.map((rs) => rs[0])[0],
     actions: renderedScene.flatMap((rs) => rs[1]),
-    setup: renderedScene.flatMap(rs => rs[2]),
+    setup: renderedScene.flatMap((rs) => rs[2]),
   };
 }
 
