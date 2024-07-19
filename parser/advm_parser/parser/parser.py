@@ -4,12 +4,14 @@ import json
 from advm_parser.parser.nodes import (
     text_node,
     when_node,
+    unless_node,
     action_node,
     lookup_node,
     setup_node,
     meta_node,
     SceneNode,
     MetaNode,
+    TemplateNode,
     append_to_text_node,
 )
 
@@ -102,7 +104,7 @@ class ReadableLine:
         return tag_name, args
 
 
-def process_tag(name: str, args: list[str]) -> SceneNode | MetaNode:
+def process_tag(name: str, args: list[str]) -> TemplateNode:
     match (name):
         case "Scene":
             return meta_node("Scene", args)
@@ -121,12 +123,18 @@ def process_tag(name: str, args: list[str]) -> SceneNode | MetaNode:
                 nodes = process_line(rl)
                 return when_node(args[0], nodes)
             return when_node(args[0], [text_node([args[1]])])
+        case "unless":
+            if args[1][0] == "@":
+                rl = ReadableLine(args[1])
+                nodes = process_line(rl)
+                return unless_node(args[0], nodes)
+            return unless_node(args[0], [text_node([args[1]])])
         case "setup":
             return setup_node(args[0])
 
 
-def process_line(line: ReadableLine) -> list[SceneNode]:
-    nodes: list[SceneNode] = []
+def process_line(line: ReadableLine) -> list[SceneNode | MetaNode]:
+    nodes: list[SceneNode | MetaNode] = []
     current_text_node = text_node([])
     while current_char := line.peek():
         match current_char:

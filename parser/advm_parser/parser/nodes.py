@@ -4,6 +4,7 @@ from typing import Literal, Tuple
 type Text = Literal["text"]
 type Lookup = Literal["lookup"]
 type When = Literal["when"]
+type Unless = Literal["unless"]
 type Action = Literal["action"]
 type Meta = Literal["meta"]
 type Setup = Literal["setup"]
@@ -11,10 +12,12 @@ type Setup = Literal["setup"]
 type LookupNode = Tuple[Lookup, str]
 type TextNode = Tuple[Text, list[str | LookupNode]]
 type WhenNode = Tuple[When, str, list[SceneNode]]
+type UnlessNode = Tuple[Unless, str, list[SceneNode]]
 type ActionNode = Tuple[Action, str, list[SceneNode]]
 type SetupNode = Tuple[Setup, str]
-type SceneNode = TextNode | WhenNode | ActionNode | SetupNode
+type SceneNode = TextNode | WhenNode | ActionNode | SetupNode | UnlessNode
 type MetaNode = Tuple[Meta, str, list[str]]
+type TemplateNode = SceneNode | MetaNode | LookupNode
 
 
 def text_node(contents: list[str | LookupNode]) -> TextNode:
@@ -23,6 +26,10 @@ def text_node(contents: list[str | LookupNode]) -> TextNode:
 
 def when_node(expression: str, contents: list[SceneNode]) -> WhenNode:
     return ("when", expression, contents)
+
+
+def unless_node(expression: str, contents: list[SceneNode]) -> UnlessNode:
+    return ("unless", expression, contents)
 
 
 def action_node(expression: str, contents: list[SceneNode]) -> ActionNode:
